@@ -1,4 +1,4 @@
-export default function CropPicker({ crops, lang, t, onPick }) {
+export default function CropPicker({ crops, lang, t, onPick, onBack }) {
   return (
     <div className="px-4 pb-8">
       <h2 className="mm-text mt-6 text-center text-2xl font-bold text-green-900">
@@ -24,6 +24,11 @@ export default function CropPicker({ crops, lang, t, onPick }) {
           </button>
         ))}
       </div>
+      {onBack && (
+        <button onClick={onBack} className="mm-text mt-8 w-full text-center text-lg font-semibold text-green-800/70 underline">
+          ← {t.back}
+        </button>
+      )}
     </div>
   )
 }

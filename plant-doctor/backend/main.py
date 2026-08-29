@@ -11,6 +11,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from crop_calendar import crop_catalog_entry, preview_planting
 from groq_client import CROPS, chat_reply, diagnose_image
 
 app = FastAPI(title="Plant Doctor API")
@@ -29,12 +30,23 @@ CONFIDENCE_FLOOR = 0.6
 
 @app.get("/crops")
 def list_crops():
-    return {
-        "crops": [
-            {"id": c["id"], "name": c["name"], "icon": c["icon"]}
-            for c in CROPS.values()
-        ]
-    }
+    return {"crops": [crop_catalog_entry(c) for c in CROPS.values()]}
+
+
+class CalendarPreviewRequest(BaseModel):
+    crop: str
+    planted_on: str
+    today: str | None = None
+
+
+@app.post("/calendar/preview")
+def calendar_preview(req: CalendarPreviewRequest):
+    if req.crop not in CROPS:
+        raise HTTPException(400, f"Unknown crop '{req.crop}'")
+    try:
+        return preview_planting(req.crop, req.planted_on, req.today)
+    except ValueError:
+        raise HTTPException(400, "Dates must be YYYY-MM-DD")
 
 
 @app.post("/diagnose")

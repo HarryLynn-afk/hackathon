@@ -30,6 +30,21 @@ npm run dev
 
 Open http://localhost:5173 on your phone or with the browser's mobile view.
 
+## Crop calendar
+
+The bottom **Calendar** tab lets a farmer record what they planted and when.
+The app looks up typical growth days from the crop catalog (rice 120–140,
+chili 90–110, …), shows the expected harvest window, the current growth stage,
+and in-app reminders for weeding, fertilizer, and harvest.
+
+- `POST /calendar/preview` computes harvest dates and stage from a crop id and
+  planting date. The phone also computes this offline if the network is down.
+- Plantings are stored on the device (`localStorage`) so the calendar keeps
+  working without an account.
+- Mark harvested with an optional yield; past seasons group by year.
+- A **Demo date** bar on the Calendar tab lets you pick a fake “today” or skip
+  +7 / +30 days so you can show growth stages and reminders without waiting.
+
 ## How diagnosis works
 
 1. The client compresses the photo to max 1024 px JPEG.

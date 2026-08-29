@@ -2,99 +2,725 @@
   "crops": [
     {
       "id": "rice",
-      "name": { "en": "Rice", "mm": "စပါး" },
+      "name": {
+        "en": "Rice",
+        "mm": "စပါး"
+      },
       "icon": "🌾",
       "diseases": [
-        { "id": "rice_blast", "en": "Rice blast", "mm": "စပါးဂုတ်ကျိုးရောဂါ" },
-        { "id": "rice_brown_spot", "en": "Brown spot", "mm": "အညိုကွက်ရောဂါ" },
-        { "id": "rice_bacterial_blight", "en": "Bacterial leaf blight", "mm": "ဘက်တီးရီးယားရွက်ဖျားခြောက်ရောဂါ" },
-        { "id": "rice_tungro", "en": "Tungro virus", "mm": "တွန်ဂရိုဗိုင်းရပ်စ်ရောဂါ" },
-        { "id": "rice_sheath_blight", "en": "Sheath blight", "mm": "ရွက်လွှာပုပ်ရောဂါ" },
-        { "id": "rice_hispa", "en": "Rice hispa (pest damage)", "mm": "စပါးဆူးပိုးကျရောက်မှု" }
+        {
+          "id": "rice_blast",
+          "en": "Rice blast",
+          "mm": "စပါးဂုတ်ကျိုးရောဂါ"
+        },
+        {
+          "id": "rice_brown_spot",
+          "en": "Brown spot",
+          "mm": "အညိုကွက်ရောဂါ"
+        },
+        {
+          "id": "rice_bacterial_blight",
+          "en": "Bacterial leaf blight",
+          "mm": "ဘက်တီးရီးယားရွက်ဖျားခြောက်ရောဂါ"
+        },
+        {
+          "id": "rice_tungro",
+          "en": "Tungro virus",
+          "mm": "တွန်ဂရိုဗိုင်းရပ်စ်ရောဂါ"
+        },
+        {
+          "id": "rice_sheath_blight",
+          "en": "Sheath blight",
+          "mm": "ရွက်လွှာပုပ်ရောဂါ"
+        },
+        {
+          "id": "rice_hispa",
+          "en": "Rice hispa (pest damage)",
+          "mm": "စပါးဆူးပိုးကျရောက်မှု"
+        }
+      ],
+      "min_days": 120,
+      "max_days": 140,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "tillering",
+          "en": "Tillering",
+          "mm": "ပင်ပွားချိန်",
+          "start": 0.15,
+          "end": 0.4
+        },
+        {
+          "id": "panicle",
+          "en": "Panicle initiation",
+          "mm": "စပါးနှံစတင်ချိန်",
+          "start": 0.4,
+          "end": 0.55
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.55,
+          "end": 0.7
+        },
+        {
+          "id": "grain",
+          "en": "Grain filling",
+          "mm": "စပါးစေ့ဖြည့်ချိန်",
+          "start": 0.7,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 21,
+          "en": "Weed the rice field.",
+          "mm": "စပါးခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 40,
+          "en": "Apply fertilizer at tillering (follow the product label).",
+          "mm": "ပင်ပွားချိန်တွင် မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "groundnut",
-      "name": { "en": "Groundnut", "mm": "မြေပဲ" },
+      "name": {
+        "en": "Groundnut",
+        "mm": "မြေပဲ"
+      },
       "icon": "🥜",
       "diseases": [
-        { "id": "gn_early_leaf_spot", "en": "Early leaf spot", "mm": "အစောပိုင်းရွက်ကွက်ရောဂါ" },
-        { "id": "gn_late_leaf_spot", "en": "Late leaf spot", "mm": "နှောင်းပိုင်းရွက်ကွက်ရောဂါ" },
-        { "id": "gn_rust", "en": "Groundnut rust", "mm": "မြေပဲသံချေးရောဂါ" },
-        { "id": "gn_rosette", "en": "Rosette virus", "mm": "ရိုးဇက်ဗိုင်းရပ်စ်ရောဂါ" },
-        { "id": "gn_alternaria", "en": "Alternaria leaf spot", "mm": "အယ်လ်တာနေးရီးယားရွက်ကွက်ရောဂါ" },
-        { "id": "gn_nutrient", "en": "Nutrient deficiency", "mm": "အာဟာရချို့တဲ့မှု" }
+        {
+          "id": "gn_early_leaf_spot",
+          "en": "Early leaf spot",
+          "mm": "အစောပိုင်းရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "gn_late_leaf_spot",
+          "en": "Late leaf spot",
+          "mm": "နှောင်းပိုင်းရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "gn_rust",
+          "en": "Groundnut rust",
+          "mm": "မြေပဲသံချေးရောဂါ"
+        },
+        {
+          "id": "gn_rosette",
+          "en": "Rosette virus",
+          "mm": "ရိုးဇက်ဗိုင်းရပ်စ်ရောဂါ"
+        },
+        {
+          "id": "gn_alternaria",
+          "en": "Alternaria leaf spot",
+          "mm": "အယ်လ်တာနေးရီးယားရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "gn_nutrient",
+          "en": "Nutrient deficiency",
+          "mm": "အာဟာရချို့တဲ့မှု"
+        }
+      ],
+      "min_days": 100,
+      "max_days": 120,
+      "stages": [
+        {
+          "id": "germination",
+          "en": "Germination",
+          "mm": "အပင်ပေါက်ချိန်",
+          "start": 0,
+          "end": 0.12
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.12,
+          "end": 0.35
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.35,
+          "end": 0.5
+        },
+        {
+          "id": "pegging",
+          "en": "Pegging",
+          "mm": "အသီးတံထိုးချိန်",
+          "start": 0.5,
+          "end": 0.7
+        },
+        {
+          "id": "pod",
+          "en": "Pod filling",
+          "mm": "အသီးဖြည့်ချိန်",
+          "start": 0.7,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 21,
+          "en": "Weed around the groundnut plants.",
+          "mm": "မြေပဲခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 35,
+          "en": "Apply fertilizer before flowering (follow the product label).",
+          "mm": "ပန်းမပွင့်မီ မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "black_gram",
-      "name": { "en": "Black gram", "mm": "မတ်ပဲ" },
+      "name": {
+        "en": "Black gram",
+        "mm": "မတ်ပဲ"
+      },
       "icon": "🫘",
       "diseases": [
-        { "id": "bg_yellow_mosaic", "en": "Yellow mosaic virus", "mm": "အဝါရောင်မိုဇစ်ဗိုင်းရပ်စ်ရောဂါ" },
-        { "id": "bg_cercospora", "en": "Cercospora leaf spot", "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ" },
-        { "id": "bg_leaf_crinkle", "en": "Leaf crinkle", "mm": "ရွက်တွန့်ရောဂါ" },
-        { "id": "bg_powdery_mildew", "en": "Powdery mildew", "mm": "မှုန့်ဖြူရောဂါ" },
-        { "id": "bg_anthracnose", "en": "Anthracnose", "mm": "မီးလောင်ကွက်ရောဂါ" }
+        {
+          "id": "bg_yellow_mosaic",
+          "en": "Yellow mosaic virus",
+          "mm": "အဝါရောင်မိုဇစ်ဗိုင်းရပ်စ်ရောဂါ"
+        },
+        {
+          "id": "bg_cercospora",
+          "en": "Cercospora leaf spot",
+          "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "bg_leaf_crinkle",
+          "en": "Leaf crinkle",
+          "mm": "ရွက်တွန့်ရောဂါ"
+        },
+        {
+          "id": "bg_powdery_mildew",
+          "en": "Powdery mildew",
+          "mm": "မှုန့်ဖြူရောဂါ"
+        },
+        {
+          "id": "bg_anthracnose",
+          "en": "Anthracnose",
+          "mm": "မီးလောင်ကွက်ရောဂါ"
+        }
+      ],
+      "min_days": 70,
+      "max_days": 90,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.15,
+          "end": 0.4
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.4,
+          "end": 0.65
+        },
+        {
+          "id": "pod",
+          "en": "Pod filling",
+          "mm": "အသီးဖြည့်ချိန်",
+          "start": 0.65,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 18,
+          "en": "Weed the black gram field.",
+          "mm": "မတ်ပဲခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 30,
+          "en": "Apply fertilizer at early flowering (follow the product label).",
+          "mm": "ပန်းစပွင့်ချိန်တွင် မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "green_gram",
-      "name": { "en": "Green gram", "mm": "ပဲတီစိမ်း" },
+      "name": {
+        "en": "Green gram",
+        "mm": "ပဲတီစိမ်း"
+      },
       "icon": "🌱",
       "diseases": [
-        { "id": "gg_yellow_mosaic", "en": "Mung bean yellow mosaic virus", "mm": "ပဲတီစိမ်းအဝါရောင်မိုဇစ်ရောဂါ" },
-        { "id": "gg_leaf_curl", "en": "Leaf curl", "mm": "ရွက်လိပ်ရောဂါ" },
-        { "id": "gg_cercospora", "en": "Cercospora leaf spot", "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ" },
-        { "id": "gg_powdery_mildew", "en": "Powdery mildew", "mm": "မှုန့်ဖြူရောဂါ" },
-        { "id": "gg_caterpillar", "en": "Caterpillar damage", "mm": "ခူပိုးကျရောက်မှု" }
+        {
+          "id": "gg_yellow_mosaic",
+          "en": "Mung bean yellow mosaic virus",
+          "mm": "ပဲတီစိမ်းအဝါရောင်မိုဇစ်ရောဂါ"
+        },
+        {
+          "id": "gg_leaf_curl",
+          "en": "Leaf curl",
+          "mm": "ရွက်လိပ်ရောဂါ"
+        },
+        {
+          "id": "gg_cercospora",
+          "en": "Cercospora leaf spot",
+          "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "gg_powdery_mildew",
+          "en": "Powdery mildew",
+          "mm": "မှုန့်ဖြူရောဂါ"
+        },
+        {
+          "id": "gg_caterpillar",
+          "en": "Caterpillar damage",
+          "mm": "ခူပိုးကျရောက်မှု"
+        }
+      ],
+      "min_days": 60,
+      "max_days": 75,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.15,
+          "end": 0.4
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.4,
+          "end": 0.65
+        },
+        {
+          "id": "pod",
+          "en": "Pod filling",
+          "mm": "အသီးဖြည့်ချိန်",
+          "start": 0.65,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 15,
+          "en": "Weed the green gram field.",
+          "mm": "ပဲတီစိမ်းခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 25,
+          "en": "Apply fertilizer at early flowering (follow the product label).",
+          "mm": "ပန်းစပွင့်ချိန်တွင် မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "pigeon_pea",
-      "name": { "en": "Pigeon pea", "mm": "ပဲစင်းငုံ" },
+      "name": {
+        "en": "Pigeon pea",
+        "mm": "ပဲစင်းငုံ"
+      },
       "icon": "🫛",
       "diseases": [
-        { "id": "pp_cercospora", "en": "Cercospora leaf spot", "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ" },
-        { "id": "pp_sterility_mosaic", "en": "Sterility mosaic", "mm": "မျိုးမအောင်မိုဇစ်ရောဂါ" },
-        { "id": "pp_leaf_webber", "en": "Leaf webber (pest)", "mm": "ရွက်ယှက်ပိုးကျရောက်မှု" },
-        { "id": "pp_wilt", "en": "Fusarium wilt", "mm": "ညှိုးနွမ်းရောဂါ" }
+        {
+          "id": "pp_cercospora",
+          "en": "Cercospora leaf spot",
+          "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "pp_sterility_mosaic",
+          "en": "Sterility mosaic",
+          "mm": "မျိုးမအောင်မိုဇစ်ရောဂါ"
+        },
+        {
+          "id": "pp_leaf_webber",
+          "en": "Leaf webber (pest)",
+          "mm": "ရွက်ယှက်ပိုးကျရောက်မှု"
+        },
+        {
+          "id": "pp_wilt",
+          "en": "Fusarium wilt",
+          "mm": "ညှိုးနွမ်းရောဂါ"
+        }
+      ],
+      "min_days": 150,
+      "max_days": 180,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.15,
+          "end": 0.4
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.4,
+          "end": 0.65
+        },
+        {
+          "id": "pod",
+          "en": "Pod filling",
+          "mm": "အသီးဖြည့်ချိန်",
+          "start": 0.65,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 30,
+          "en": "Weed the pigeon pea field.",
+          "mm": "ပဲစင်းငုံခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 50,
+          "en": "Apply fertilizer during vegetative growth (follow the product label).",
+          "mm": "အပင်ကြီးထွားချိန်တွင် မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "sesame",
-      "name": { "en": "Sesame", "mm": "နှမ်း" },
+      "name": {
+        "en": "Sesame",
+        "mm": "နှမ်း"
+      },
       "icon": "🌿",
       "diseases": [
-        { "id": "ss_bacterial_spot", "en": "Bacterial leaf spot", "mm": "ဘက်တီးရီးယားရွက်ကွက်ရောဂါ" },
-        { "id": "ss_leaf_curl", "en": "Leaf curl", "mm": "ရွက်လိပ်ရောဂါ" },
-        { "id": "ss_yellowing", "en": "Yellowing / phyllody", "mm": "ရွက်ဝါရောဂါ" },
-        { "id": "ss_yellow_mosaic", "en": "Sesame yellow mosaic virus", "mm": "နှမ်းအဝါရောင်မိုဇစ်ရောဂါ" },
-        { "id": "ss_insect", "en": "Insect leaf damage", "mm": "ပိုးမွှားဖျက်ဆီးမှု" }
+        {
+          "id": "ss_bacterial_spot",
+          "en": "Bacterial leaf spot",
+          "mm": "ဘက်တီးရီးယားရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "ss_leaf_curl",
+          "en": "Leaf curl",
+          "mm": "ရွက်လိပ်ရောဂါ"
+        },
+        {
+          "id": "ss_yellowing",
+          "en": "Yellowing / phyllody",
+          "mm": "ရွက်ဝါရောဂါ"
+        },
+        {
+          "id": "ss_yellow_mosaic",
+          "en": "Sesame yellow mosaic virus",
+          "mm": "နှမ်းအဝါရောင်မိုဇစ်ရောဂါ"
+        },
+        {
+          "id": "ss_insect",
+          "en": "Insect leaf damage",
+          "mm": "ပိုးမွှားဖျက်ဆီးမှု"
+        }
+      ],
+      "min_days": 80,
+      "max_days": 100,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.15,
+          "end": 0.4
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.4,
+          "end": 0.65
+        },
+        {
+          "id": "capsule",
+          "en": "Capsule filling",
+          "mm": "အသီးဖြည့်ချိန်",
+          "start": 0.65,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 20,
+          "en": "Weed the sesame field.",
+          "mm": "နှမ်းခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 35,
+          "en": "Apply fertilizer before flowering (follow the product label).",
+          "mm": "ပန်းမပွင့်မီ မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "chili",
-      "name": { "en": "Chili", "mm": "ငရုတ်" },
+      "name": {
+        "en": "Chili",
+        "mm": "ငရုတ်"
+      },
       "icon": "🌶️",
       "diseases": [
-        { "id": "ch_anthracnose", "en": "Anthracnose (fruit rot)", "mm": "အသီးပုပ်မီးလောင်ကွက်ရောဂါ" },
-        { "id": "ch_leaf_curl", "en": "Leaf curl virus", "mm": "ရွက်လိပ်ဗိုင်းရပ်စ်ရောဂါ" },
-        { "id": "ch_bacterial_spot", "en": "Bacterial leaf spot", "mm": "ဘက်တီးရီးယားရွက်ကွက်ရောဂါ" },
-        { "id": "ch_powdery_mildew", "en": "Powdery mildew", "mm": "မှုန့်ဖြူရောဂါ" },
-        { "id": "ch_wilt", "en": "Wilt", "mm": "ညှိုးနွမ်းရောဂါ" }
+        {
+          "id": "ch_anthracnose",
+          "en": "Anthracnose (fruit rot)",
+          "mm": "အသီးပုပ်မီးလောင်ကွက်ရောဂါ"
+        },
+        {
+          "id": "ch_leaf_curl",
+          "en": "Leaf curl virus",
+          "mm": "ရွက်လိပ်ဗိုင်းရပ်စ်ရောဂါ"
+        },
+        {
+          "id": "ch_bacterial_spot",
+          "en": "Bacterial leaf spot",
+          "mm": "ဘက်တီးရီးယားရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "ch_powdery_mildew",
+          "en": "Powdery mildew",
+          "mm": "မှုန့်ဖြူရောဂါ"
+        },
+        {
+          "id": "ch_wilt",
+          "en": "Wilt",
+          "mm": "ညှိုးနွမ်းရောဂါ"
+        }
+      ],
+      "min_days": 90,
+      "max_days": 110,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.15,
+          "end": 0.4
+        },
+        {
+          "id": "flowering",
+          "en": "Flowering",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.4,
+          "end": 0.6
+        },
+        {
+          "id": "fruiting",
+          "en": "Fruiting",
+          "mm": "အသီးတင်ချိန်",
+          "start": 0.6,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 21,
+          "en": "Weed around the chili plants.",
+          "mm": "ငရုတ်ခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 35,
+          "en": "Apply fertilizer at flowering (follow the product label).",
+          "mm": "ပန်းပွင့်ချိန်တွင် မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     },
     {
       "id": "maize",
-      "name": { "en": "Maize (Corn)", "mm": "ပြောင်း" },
+      "name": {
+        "en": "Maize (Corn)",
+        "mm": "ပြောင်း"
+      },
       "icon": "🌽",
       "diseases": [
-        { "id": "mz_leaf_blight", "en": "Northern leaf blight", "mm": "ရွက်ခြောက်ရောဂါ" },
-        { "id": "mz_rust", "en": "Common rust", "mm": "သံချေးရောဂါ" },
-        { "id": "mz_gray_leaf_spot", "en": "Gray leaf spot", "mm": "မီးခိုးရောင်ရွက်ကွက်ရောဂါ" },
-        { "id": "mz_downy_mildew", "en": "Downy mildew", "mm": "နှင်းမှိုရောဂါ" },
-        { "id": "mz_armyworm", "en": "Fall armyworm damage", "mm": "မြက်ခင်းပိုးကျရောက်မှု" }
+        {
+          "id": "mz_leaf_blight",
+          "en": "Northern leaf blight",
+          "mm": "ရွက်ခြောက်ရောဂါ"
+        },
+        {
+          "id": "mz_rust",
+          "en": "Common rust",
+          "mm": "သံချေးရောဂါ"
+        },
+        {
+          "id": "mz_gray_leaf_spot",
+          "en": "Gray leaf spot",
+          "mm": "မီးခိုးရောင်ရွက်ကွက်ရောဂါ"
+        },
+        {
+          "id": "mz_downy_mildew",
+          "en": "Downy mildew",
+          "mm": "နှင်းမှိုရောဂါ"
+        },
+        {
+          "id": "mz_armyworm",
+          "en": "Fall armyworm damage",
+          "mm": "မြက်ခင်းပိုးကျရောက်မှု"
+        }
+      ],
+      "min_days": 90,
+      "max_days": 120,
+      "stages": [
+        {
+          "id": "seedling",
+          "en": "Seedling",
+          "mm": "ပျိုးပင်",
+          "start": 0,
+          "end": 0.15
+        },
+        {
+          "id": "vegetative",
+          "en": "Vegetative",
+          "mm": "အပင်ကြီးထွားချိန်",
+          "start": 0.15,
+          "end": 0.45
+        },
+        {
+          "id": "tasseling",
+          "en": "Tasseling",
+          "mm": "ပန်းပွင့်ချိန်",
+          "start": 0.45,
+          "end": 0.65
+        },
+        {
+          "id": "grain",
+          "en": "Grain filling",
+          "mm": "စေ့ဖြည့်ချိန်",
+          "start": 0.65,
+          "end": 0.9
+        },
+        {
+          "id": "harvest",
+          "en": "Harvest ready",
+          "mm": "ရိတ်သိမ်းချိန်",
+          "start": 0.9,
+          "end": 1
+        }
+      ],
+      "care": [
+        {
+          "id": "weed",
+          "day": 20,
+          "en": "Weed the maize field.",
+          "mm": "ပြောင်းခင်းကို ပေါင်းရှင်းပါ။"
+        },
+        {
+          "id": "fertilize",
+          "day": 35,
+          "en": "Apply fertilizer before tasseling (follow the product label).",
+          "mm": "ပန်းမပွင့်မီ မြေသြဇာထည့်ပါ (ဆေးဘူးပေါ်ရှိ ညွှန်ကြားချက်အတိုင်း)။"
+        }
       ]
     }
   ]
