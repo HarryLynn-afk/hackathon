@@ -36,6 +36,9 @@ export const STRINGS = {
     chatPlaceholder: 'မေးခွန်းရိုက်ထည့်ပါ...',
     chatSend: 'ပို့မည်',
     chatClose: 'ပိတ်မည်',
+    micStart: 'အသံဖြင့် မေးမည်',
+    micStop: 'ရပ်မည်',
+    micError: 'အသံဖမ်းယူ၍ မရပါ။ မိုက်ခရိုဖုန်းခွင့်ပြုချက်ကို စစ်ပြီး ထပ်စမ်းပါ။',
     chatQuick: [
       'ဆေးကို ဘယ်လိုဖြန်းရမလဲ။',
       'ဘယ်လောက်ကြာရင် သက်သာမလဲ။',
@@ -110,6 +113,9 @@ export const STRINGS = {
     chatPlaceholder: 'Type your question...',
     chatSend: 'Send',
     chatClose: 'Close',
+    micStart: 'Ask by voice',
+    micStop: 'Stop',
+    micError: 'Could not capture audio. Check microphone permission and try again.',
     chatQuick: [
       'How do I apply the treatment?',
       'How long until it recovers?',

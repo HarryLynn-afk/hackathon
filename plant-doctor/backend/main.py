@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from azure_speech import synthesize as synthesize_speech
 from crop_calendar import crop_catalog_entry, preview_planting
+from elevenlabs_stt import transcribe as transcribe_speech
 from groq_client import CROPS, chat_reply, diagnose_image
 
 app = FastAPI(title="Plant Doctor API")
@@ -27,6 +28,7 @@ app.add_middleware(
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 ALLOWED_MIMES = {"image/jpeg", "image/png", "image/webp"}
 CONFIDENCE_FLOOR = 0.6
+MAX_AUDIO_BYTES = 10 * 1024 * 1024
 
 
 @app.get("/crops")
@@ -115,6 +117,23 @@ def speak(req: SpeakRequest):
         logging.exception("speech synthesis failed for lang=%s", req.lang)
         raise HTTPException(502, "The speech service is not responding. Please try again.")
     return Response(content=audio, media_type="audio/mpeg")
+
+
+@app.post("/transcribe")
+async def transcribe_audio(file: UploadFile = File(...), lang: str = Form("mm")):
+    data = await file.read()
+    if len(data) > MAX_AUDIO_BYTES:
+        raise HTTPException(400, "Recording is too long")
+    if len(data) < 500:
+        raise HTTPException(400, "Recording is too short")
+    try:
+        result = transcribe_speech(data, file.filename, file.content_type, lang)
+    except Exception:
+        logging.exception("speech-to-text failed for lang=%s", lang)
+        raise HTTPException(502, "The voice service is not responding. Please try again.")
+    if not result["text"]:
+        raise HTTPException(422, "Could not understand the recording. Please try again.")
+    return result
 
 
 if __name__ == "__main__":

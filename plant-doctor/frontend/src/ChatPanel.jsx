@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import SpeakButton from './SpeakButton'
+import MicButton from './MicButton'
 
 export default function ChatPanel({ crop, diagnosis, lang, t, open, onClose }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
+  const [micError, setMicError] = useState(false)
   const bottomRef = useRef(null)
 
   useEffect(() => {
@@ -82,7 +84,21 @@ export default function ChatPanel({ crop, diagnosis, lang, t, open, onClose }) {
           </div>
         )}
 
+        {micError && (
+          <p className="mm-text px-4 pb-1 text-sm font-semibold text-red-600">{t.micError}</p>
+        )}
+
         <div className="flex items-end gap-2 border-t-2 border-green-100 p-3">
+          <MicButton
+            lang={lang}
+            t={t}
+            onTranscript={(text) => {
+              setMicError(false)
+              if (text) setInput((prev) => (prev ? `${prev} ${text}` : text))
+            }}
+            onError={() => setMicError(true)}
+            className="h-14 w-14 shrink-0 text-2xl"
+          />
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}

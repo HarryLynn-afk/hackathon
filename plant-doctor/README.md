@@ -20,6 +20,7 @@ python3 -m venv .venv
 #   GROQ_API_KEY=gsk_...
 #   AZURE_SPEECH_KEY=...
 #   AZURE_SPEECH_REGION=eastasia
+#   ELEVENLABS_SCRIBE_API_KEY=...
 .venv/bin/python main.py
 ```
 
@@ -77,3 +78,17 @@ calls Azure AI Speech and streams back MP3 audio:
   re-bill Azure.
 - Requires an Azure AI Speech resource; put its key/region in `backend/.env`
   (see above). Free-tier resources work fine for a demo.
+
+## Ask by voice (speech-to-text)
+
+A 🎤 button next to the chat input lets a farmer speak their question instead
+of typing, in Burmese or English. Tap to record, tap again to stop:
+
+- The clip is uploaded to `POST /transcribe {file, lang}`, which sends it to
+  ElevenLabs Scribe (`scribe_v1`) and returns the transcribed text.
+- The current app language (`mm`/`en`) is passed as a hint to Scribe for
+  better accuracy, but Scribe still auto-detects, so mixed-language speech
+  still transcribes.
+- The transcript is dropped into the text box (not auto-sent), so the farmer
+  can check it before tapping **Send**.
+- Requires an ElevenLabs account; put its key in `backend/.env` (see above).
