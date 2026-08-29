@@ -16,8 +16,10 @@ Backend (port 8000):
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-# put your keys in backend/.env:
+# put your keys in backend/.env (see .env.example):
 #   GROQ_API_KEY=gsk_...
+#   GROQ_API_KEY_2=gsk_...   (optional, used if the first key is rate-limited)
+#   GROQ_API_KEY_3=gsk_...   (optional)
 #   AZURE_SPEECH_KEY=...
 #   AZURE_SPEECH_REGION=eastasia
 #   ELEVENLABS_SCRIBE_API_KEY=...
@@ -57,6 +59,17 @@ and in-app reminders for weeding, fertilizer, and harvest.
    that crop and requires structured JSON with parallel `en`/`mm` fields.
 4. Guardrails: non-plant photos are rejected, confidence below 60% asks the
    farmer to retake, and the model is told to never invent pesticide dosages.
+
+### Groq key fallback
+
+Free-tier Groq keys hit rate limits fast during a demo. Set `GROQ_API_KEY`
+plus any number of `GROQ_API_KEY_2`, `GROQ_API_KEY_3`, ... in `backend/.env`
+and the backend rotates through them automatically:
+
+- A key that returns 429 (rate limited) is benched for its `retry-after`
+  window (capped at 2 minutes) and the next key is tried immediately.
+- A key that returns 401/403 (invalid/disabled) is benched for an hour.
+- Only if every key is unavailable does the request actually fail.
 
 ## Follow-up chat
 

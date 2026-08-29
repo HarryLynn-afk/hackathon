@@ -2,6 +2,7 @@
 
 import base64
 import json
+import logging
 import os
 import time
 
@@ -233,18 +234,58 @@ def chat_reply(crop_id: str, diagnosis: dict, lang: str, messages: list) -> str:
     return _call_groq(payload).strip()
 
 
+def _load_api_keys() -> list[str]:
+    """Read GROQ_API_KEY plus any GROQ_API_KEY_2, GROQ_API_KEY_3, ... from env."""
+    keys = []
+    primary = os.environ.get("GROQ_API_KEY", "").strip()
+    if primary:
+        keys.append(primary)
+    i = 2
+    while True:
+        key = os.environ.get(f"GROQ_API_KEY_{i}", "").strip()
+        if not key:
+            break
+        keys.append(key)
+        i += 1
+    if not keys:
+        raise RuntimeError(
+            "Set GROQ_API_KEY (and optionally GROQ_API_KEY_2, GROQ_API_KEY_3, ...) in .env"
+        )
+    return keys
+
+
+API_KEYS = _load_api_keys()
+
+# A key that just got rate-limited or rejected is benched until this time so
+# free-tier limits on one key don't block requests that another key can serve.
+_key_cooldown_until: dict[str, float] = {}
+
+
 def _call_groq(payload: dict) -> str:
-    headers = {
-        "Authorization": f"Bearer {os.environ['GROQ_API_KEY']}",
-        "User-Agent": HEADERS_UA,
-    }
-    # Free-tier Groq rate-limits bursts; retry a couple of times before failing.
-    for attempt in range(3):
-        resp = requests.post(GROQ_URL, json=payload, headers=headers, timeout=90)
-        if resp.status_code == 429 and attempt < 2:
-            wait = float(resp.headers.get("retry-after", 2 * (attempt + 1)))
-            time.sleep(min(wait, 15))
-            continue
-        resp.raise_for_status()
-        break
-    return resp.json()["choices"][0]["message"]["content"]
+    last_error: Exception | None = None
+    for pass_num in range(2):
+        for i, key in enumerate(API_KEYS):
+            if time.time() < _key_cooldown_until.get(key, 0):
+                continue
+            headers = {"Authorization": f"Bearer {key}", "User-Agent": HEADERS_UA}
+            try:
+                resp = requests.post(GROQ_URL, json=payload, headers=headers, timeout=90)
+            except requests.RequestException as exc:
+                last_error = exc
+                continue
+            if resp.status_code == 429:
+                wait = float(resp.headers.get("retry-after", 30))
+                _key_cooldown_until[key] = time.time() + min(wait, 120)
+                logging.warning("Groq key #%d rate-limited, trying next key", i + 1)
+                last_error = requests.HTTPError(f"429 from Groq key #{i + 1}", response=resp)
+                continue
+            if resp.status_code in (401, 403):
+                _key_cooldown_until[key] = time.time() + 3600
+                logging.warning("Groq key #%d rejected (status %d), skipping it", i + 1, resp.status_code)
+                last_error = requests.HTTPError(f"{resp.status_code} from Groq key #{i + 1}", response=resp)
+                continue
+            resp.raise_for_status()
+            return resp.json()["choices"][0]["message"]["content"]
+        if pass_num == 0 and len(API_KEYS) > 0:
+            time.sleep(2)
+    raise last_error or RuntimeError("All Groq API keys are unavailable")
