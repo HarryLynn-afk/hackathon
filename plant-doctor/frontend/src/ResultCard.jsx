@@ -53,6 +53,37 @@ export default function ResultCard({ result, preview, lang, t, onNewCheck }) {
         </Section>
       )}
 
+      {!healthy && result.medicines?.length > 0 && (
+        <Section title={`💊 ${t.medicines}`}>
+          <div className="space-y-3">
+            {result.medicines.map((med, i) => (
+              <div key={i} className="rounded-xl border-2 border-green-100 bg-green-50/60 p-4">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="mm-text text-xl font-bold text-green-900">
+                    {med.name_mm}
+                  </span>
+                  <span className="text-lg font-semibold text-green-800/80">
+                    {med.name_en}
+                  </span>
+                </div>
+                {(med.company_mm || med.company_en) && (
+                  <p className="mm-text mt-1 text-base font-semibold text-green-800/80">
+                    🏭 {lang === 'mm' ? med.company_mm || med.company_en : med.company_en || med.company_mm}
+                  </p>
+                )}
+                {med.ingredient && (
+                  <p className="mt-1 text-base text-green-800/60">{med.ingredient}</p>
+                )}
+                {med.note && (
+                  <p className="mm-text mt-2 text-lg leading-relaxed">{med.note[lang]}</p>
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="mm-text mt-3 text-base text-green-900/60">{t.medicinesHint}</p>
+        </Section>
+      )}
+
       {!healthy && result.prevention && (
         <Section title={t.prevention}>
           <p className="mm-text text-lg leading-relaxed">{result.prevention[lang]}</p>

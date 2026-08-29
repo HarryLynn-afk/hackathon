@@ -1,0 +1,50 @@
+{
+  "sources": ["https://www.margamin.com/", "https://myanmaawba.com/"],
+  "fungicides": [
+    { "name_mm": "ယူနတီ", "name_en": "Unity", "ingredient": "Azoxystrobin 20% + Difenoconazole 12.5%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ရီဗိုက်", "name_en": "Revive", "ingredient": "Azoxystrobin 25%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ပရိုဝမ်း", "name_en": "Pro-One", "ingredient": "Propiconazole 25%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "သဒ္ဒါ ၂၈၀ အက်စ်စီ", "name_en": "Thada 280 SC", "ingredient": "Cyproconazole 80 g/l + Picoxystrobin 200 g/l", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ကာဗင် ၄၀၀ အက်စ်စီ", "name_en": "Carben 400 SC", "ingredient": "Iprodione 200 g/l + Pyrimethanil 200 g/l", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "အိန်ဂျယ်လ်", "name_en": "Angel", "ingredient": "Dimethomorph 50%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "သြဘာစွယ်စုံ (၁)", "name_en": "Awba Swalsone (1)", "ingredient": "Chlorothalonil 45% + Hexaconazole 3.5% + Cymoxanil 6.5%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ကလောက်ဒီ", "name_en": "Kloudy", "ingredient": "Sulfur 80%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ဇီးလော့", "name_en": "Zealot", "ingredient": "Thiram 80%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ဇီဖလို", "name_en": "Ziflo", "ingredient": "Ziram 76%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "မှိုဘုရင် ၄၀၀ အက်စ်စီ", "name_en": "Mho Bayin 400 SC", "ingredient": "Difenoconazole 15% + Azoxystrobin 25% SC", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "မာဃ ဟက်ဇာ ၅ အီးစီ", "name_en": "Marga Hexa 5 EC", "ingredient": "Hexaconazole 5% EC", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ဒိုင်နိုဆော", "name_en": "Dynoso", "ingredient": "Copper Oxychloride 45% + Kasugamycin 2% WP", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ရော့ခ်", "name_en": "Rock", "ingredient": "Thiophanate Methyl 70% WP", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "မှိုစတား ၈၅ ဒဗလျူပီ", "name_en": "Mho Star 85 WP", "ingredient": "Broad-spectrum fungicide 85% WP", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ဘီအန်အက်စ် ပရိုပီ", "name_en": "BNS Propi", "ingredient": "Propiconazole 25% EC", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ပီလာဇီးလ် ၃၅ ဒဗလျူပီ", "name_en": "Pilarzil 35 WP", "ingredient": "Metalaxyl 35% WP", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ပီလာဇက် ၈၀ ဒဗလျူပီ", "name_en": "Pilarzeb 80 WP", "ingredient": "Mancozeb 80% WP", "company_mm": "မာဃမင်း", "company_en": "Marga Min" }
+  ],
+  "insecticides": [
+    { "name_mm": "အလန်း", "name_en": "Alarm", "ingredient": "Emamectin Benzoate 5% + Lambda Cyhalothrin 10%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "တော်ပီဒို", "name_en": "Topedo", "ingredient": "Fipronil 5%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "သန်းဒါး", "name_en": "Thunder 25 EC", "ingredient": "Cypermethrin 25%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ဘက်တား", "name_en": "Better", "ingredient": "Acetamiprid 20% + Lambda Cyhalothrin 5%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "အဆီဖိတ်", "name_en": "Azphate", "ingredient": "Acephate 75%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ပိုင်ဒီ", "name_en": "Pydi", "ingredient": "Pymetrozine 50% + Nitenpyram 20% (aphids, whiteflies, hoppers)", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ဖိုင်းရား", "name_en": "Fire", "ingredient": "Carbosulfan 20%", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ဖြုတ်ကင်း", "name_en": "Phyoke King", "ingredient": "Fenobucarb 45% + Cypermethrin 5% (rice pests)", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ဇွန်ဘီ", "name_en": "Zombie", "ingredient": "Cartap Hydrochloride 95% (rice stem borer)", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ပိုးစတား ၃၅ အီးစီ", "name_en": "Poe Star 35 EC", "ingredient": "Thiamethoxam 35% EC", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "မာဃ အီမာ ၅ ဒဗလျူဒီဂျီ", "name_en": "Marga Ema 5 WDG", "ingredient": "Emamectin Benzoate 5% WDG", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ပီလန်ဒါ ၂.၅ အီးစီ", "name_en": "Pilanda 2.5 EC", "ingredient": "Lambda-Cyhalothrin 2.5% EC", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ပီလာကင်း ၂၀ အက်စ်အယ်လ်", "name_en": "Pilarking 20 SL", "ingredient": "Imidacloprid 20% SL (aphids, hoppers)", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "ပီလာမက်တင် ၁.၈ အီးစီ", "name_en": "Pilarmectin 1.8 EC", "ingredient": "Abamectin 1.8% EC (mites, leaf miners)", "company_mm": "မာဃမင်း", "company_en": "Marga Min" }
+  ],
+  "fertilizers": [
+    { "name_mm": "ကောမက်ဗီတာ ၁၅-၁၅-၁၅", "name_en": "CometVita 15-15-15", "ingredient": "NPK 15-15-15 compound", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ရွှေကောမက် ပဲမျိုးစုံ", "name_en": "Shwe Comet (pulses)", "ingredient": "Compound fertilizer for pulses", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ကောမက် ဂျစ်ပ်ဆမ်", "name_en": "Comet Gypsum", "ingredient": "Gypsum (calcium + sulphur)", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "ကောမက်အားကောင်း", "name_en": "Comet Arkaung", "ingredient": "Foliar feed", "company_mm": "မြန်မာ့ဩဘာ", "company_en": "Myanma Awba" },
+    { "name_mm": "မာဃမင်း ယူရီးယား", "name_en": "Marga Min Urea", "ingredient": "Urea (Nitrogen)", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "မာဃမင်း ၁၅ - ၁၅ - ၁၅", "name_en": "Marga Min 15-15-15", "ingredient": "NPK 15-15-15 compound", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "မာဃမင်း High-21", "name_en": "Marga Min High-21", "ingredient": "Foliar fertilizer", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "အမ်ဂျီအမ် ဖရုသ် 13-0-46", "name_en": "MGM Fruit 13-0-46", "ingredient": "Potassium nitrate foliar", "company_mm": "မာဃမင်း", "company_en": "Marga Min" },
+    { "name_mm": "မာဃမင်း ပိုတက်ခ်ျ", "name_en": "Marga Min Potash", "ingredient": "Potassium fertilizer", "company_mm": "မာဃမင်း", "company_en": "Marga Min" }
+  ]
+}
