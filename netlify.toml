@@ -1,0 +1,17 @@
+# Netlify config for the Plant Doctor frontend.
+# The backend (FastAPI) is not deployed here — it needs its own host
+# (Render, Railway, Fly.io, etc). Once it's live, replace the placeholder
+# URL below with your backend's real URL and redeploy.
+
+[build]
+  base = "plant-doctor/frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# Proxies /api/* the same way vite.config.js does locally, so the frontend
+# code (which calls fetch('/api/...')) doesn't need to change at all.
+[[redirects]]
+  from = "/api/*"
+  to = "https://REPLACE-WITH-YOUR-BACKEND-URL.onrender.com/:splat"
+  status = 200
+  force = true
