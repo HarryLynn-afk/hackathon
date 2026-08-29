@@ -16,7 +16,10 @@ Backend (port 8000):
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-# put your key in backend/.env:  GROQ_API_KEY=gsk_...
+# put your keys in backend/.env:
+#   GROQ_API_KEY=gsk_...
+#   AZURE_SPEECH_KEY=...
+#   AZURE_SPEECH_REGION=eastasia
 .venv/bin/python main.py
 ```
 
@@ -45,3 +48,17 @@ After a diagnosis, a floating "Ask a question" button opens a chat about that
 disease. `POST /chat` receives the diagnosis context plus the message history
 and answers in the app's current language (Burmese or English), staying on
 farming topics only. Quick-question chips let farmers ask without typing.
+
+## Listen to results (text-to-speech)
+
+A 🔊 button on the result card and on each chat reply reads the text aloud,
+for farmers who prefer listening over reading. `POST /speak {text, lang}`
+calls Azure AI Speech and streams back MP3 audio:
+
+- Burmese (`mm`) uses the `my-MM-NilarNeural` neural voice.
+- English (`en`) uses `en-US-JennyNeural`.
+- Audio is only synthesized when a farmer taps the button (not on every
+  diagnosis), and identical text is cached in memory so replaying doesn't
+  re-bill Azure.
+- Requires an Azure AI Speech resource; put its key/region in `backend/.env`
+  (see above). Free-tier resources work fine for a demo.

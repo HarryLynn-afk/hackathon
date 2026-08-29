@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import SpeakButton from './SpeakButton'
 
 export default function ChatPanel({ crop, diagnosis, lang, t, open, onClose }) {
   const [messages, setMessages] = useState([])
@@ -53,9 +54,9 @@ export default function ChatPanel({ crop, diagnosis, lang, t, open, onClose }) {
         </header>
 
         <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-          <Bubble role="assistant">{t.chatHello}</Bubble>
+          <Bubble role="assistant" lang={lang}>{t.chatHello}</Bubble>
           {messages.map((m, i) => (
-            <Bubble key={i} role={m.role}>{m.content}</Bubble>
+            <Bubble key={i} role={m.role} lang={lang}>{m.content}</Bubble>
           ))}
           {busy && (
             <div className="flex items-center gap-2 pl-2 text-green-800/60">
@@ -108,10 +109,10 @@ export default function ChatPanel({ crop, diagnosis, lang, t, open, onClose }) {
   )
 }
 
-function Bubble({ role, children }) {
+function Bubble({ role, lang, children }) {
   const isUser = role === 'user'
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex items-end gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
       <p
         className={`mm-text max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-lg leading-relaxed ${
           isUser
@@ -121,6 +122,13 @@ function Bubble({ role, children }) {
       >
         {children}
       </p>
+      {!isUser && (
+        <SpeakButton
+          text={children}
+          lang={lang}
+          className="h-10 w-10 shrink-0 border-2 border-green-300 bg-white text-lg"
+        />
+      )}
     </div>
   )
 }
