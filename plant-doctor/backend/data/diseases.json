@@ -1,0 +1,101 @@
+{
+  "crops": [
+    {
+      "id": "rice",
+      "name": { "en": "Rice", "mm": "စပါး" },
+      "icon": "🌾",
+      "diseases": [
+        { "id": "rice_blast", "en": "Rice blast", "mm": "စပါးဂုတ်ကျိုးရောဂါ" },
+        { "id": "rice_brown_spot", "en": "Brown spot", "mm": "အညိုကွက်ရောဂါ" },
+        { "id": "rice_bacterial_blight", "en": "Bacterial leaf blight", "mm": "ဘက်တီးရီးယားရွက်ဖျားခြောက်ရောဂါ" },
+        { "id": "rice_tungro", "en": "Tungro virus", "mm": "တွန်ဂရိုဗိုင်းရပ်စ်ရောဂါ" },
+        { "id": "rice_sheath_blight", "en": "Sheath blight", "mm": "ရွက်လွှာပုပ်ရောဂါ" },
+        { "id": "rice_hispa", "en": "Rice hispa (pest damage)", "mm": "စပါးဆူးပိုးကျရောက်မှု" }
+      ]
+    },
+    {
+      "id": "groundnut",
+      "name": { "en": "Groundnut", "mm": "မြေပဲ" },
+      "icon": "🥜",
+      "diseases": [
+        { "id": "gn_early_leaf_spot", "en": "Early leaf spot", "mm": "အစောပိုင်းရွက်ကွက်ရောဂါ" },
+        { "id": "gn_late_leaf_spot", "en": "Late leaf spot", "mm": "နှောင်းပိုင်းရွက်ကွက်ရောဂါ" },
+        { "id": "gn_rust", "en": "Groundnut rust", "mm": "မြေပဲသံချေးရောဂါ" },
+        { "id": "gn_rosette", "en": "Rosette virus", "mm": "ရိုးဇက်ဗိုင်းရပ်စ်ရောဂါ" },
+        { "id": "gn_alternaria", "en": "Alternaria leaf spot", "mm": "အယ်လ်တာနေးရီးယားရွက်ကွက်ရောဂါ" },
+        { "id": "gn_nutrient", "en": "Nutrient deficiency", "mm": "အာဟာရချို့တဲ့မှု" }
+      ]
+    },
+    {
+      "id": "black_gram",
+      "name": { "en": "Black gram", "mm": "မတ်ပဲ" },
+      "icon": "🫘",
+      "diseases": [
+        { "id": "bg_yellow_mosaic", "en": "Yellow mosaic virus", "mm": "အဝါရောင်မိုဇစ်ဗိုင်းရပ်စ်ရောဂါ" },
+        { "id": "bg_cercospora", "en": "Cercospora leaf spot", "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ" },
+        { "id": "bg_leaf_crinkle", "en": "Leaf crinkle", "mm": "ရွက်တွန့်ရောဂါ" },
+        { "id": "bg_powdery_mildew", "en": "Powdery mildew", "mm": "မှုန့်ဖြူရောဂါ" },
+        { "id": "bg_anthracnose", "en": "Anthracnose", "mm": "မီးလောင်ကွက်ရောဂါ" }
+      ]
+    },
+    {
+      "id": "green_gram",
+      "name": { "en": "Green gram", "mm": "ပဲတီစိမ်း" },
+      "icon": "🌱",
+      "diseases": [
+        { "id": "gg_yellow_mosaic", "en": "Mung bean yellow mosaic virus", "mm": "ပဲတီစိမ်းအဝါရောင်မိုဇစ်ရောဂါ" },
+        { "id": "gg_leaf_curl", "en": "Leaf curl", "mm": "ရွက်လိပ်ရောဂါ" },
+        { "id": "gg_cercospora", "en": "Cercospora leaf spot", "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ" },
+        { "id": "gg_powdery_mildew", "en": "Powdery mildew", "mm": "မှုန့်ဖြူရောဂါ" },
+        { "id": "gg_caterpillar", "en": "Caterpillar damage", "mm": "ခူပိုးကျရောက်မှု" }
+      ]
+    },
+    {
+      "id": "pigeon_pea",
+      "name": { "en": "Pigeon pea", "mm": "ပဲစင်းငုံ" },
+      "icon": "🫛",
+      "diseases": [
+        { "id": "pp_cercospora", "en": "Cercospora leaf spot", "mm": "ဆာကိုစပိုရာရွက်ကွက်ရောဂါ" },
+        { "id": "pp_sterility_mosaic", "en": "Sterility mosaic", "mm": "မျိုးမအောင်မိုဇစ်ရောဂါ" },
+        { "id": "pp_leaf_webber", "en": "Leaf webber (pest)", "mm": "ရွက်ယှက်ပိုးကျရောက်မှု" },
+        { "id": "pp_wilt", "en": "Fusarium wilt", "mm": "ညှိုးနွမ်းရောဂါ" }
+      ]
+    },
+    {
+      "id": "sesame",
+      "name": { "en": "Sesame", "mm": "နှမ်း" },
+      "icon": "🌿",
+      "diseases": [
+        { "id": "ss_bacterial_spot", "en": "Bacterial leaf spot", "mm": "ဘက်တီးရီးယားရွက်ကွက်ရောဂါ" },
+        { "id": "ss_leaf_curl", "en": "Leaf curl", "mm": "ရွက်လိပ်ရောဂါ" },
+        { "id": "ss_yellowing", "en": "Yellowing / phyllody", "mm": "ရွက်ဝါရောဂါ" },
+        { "id": "ss_yellow_mosaic", "en": "Sesame yellow mosaic virus", "mm": "နှမ်းအဝါရောင်မိုဇစ်ရောဂါ" },
+        { "id": "ss_insect", "en": "Insect leaf damage", "mm": "ပိုးမွှားဖျက်ဆီးမှု" }
+      ]
+    },
+    {
+      "id": "chili",
+      "name": { "en": "Chili", "mm": "ငရုတ်" },
+      "icon": "🌶️",
+      "diseases": [
+        { "id": "ch_anthracnose", "en": "Anthracnose (fruit rot)", "mm": "အသီးပုပ်မီးလောင်ကွက်ရောဂါ" },
+        { "id": "ch_leaf_curl", "en": "Leaf curl virus", "mm": "ရွက်လိပ်ဗိုင်းရပ်စ်ရောဂါ" },
+        { "id": "ch_bacterial_spot", "en": "Bacterial leaf spot", "mm": "ဘက်တီးရီးယားရွက်ကွက်ရောဂါ" },
+        { "id": "ch_powdery_mildew", "en": "Powdery mildew", "mm": "မှုန့်ဖြူရောဂါ" },
+        { "id": "ch_wilt", "en": "Wilt", "mm": "ညှိုးနွမ်းရောဂါ" }
+      ]
+    },
+    {
+      "id": "maize",
+      "name": { "en": "Maize (Corn)", "mm": "ပြောင်း" },
+      "icon": "🌽",
+      "diseases": [
+        { "id": "mz_leaf_blight", "en": "Northern leaf blight", "mm": "ရွက်ခြောက်ရောဂါ" },
+        { "id": "mz_rust", "en": "Common rust", "mm": "သံချေးရောဂါ" },
+        { "id": "mz_gray_leaf_spot", "en": "Gray leaf spot", "mm": "မီးခိုးရောင်ရွက်ကွက်ရောဂါ" },
+        { "id": "mz_downy_mildew", "en": "Downy mildew", "mm": "နှင်းမှိုရောဂါ" },
+        { "id": "mz_armyworm", "en": "Fall armyworm damage", "mm": "မြက်ခင်းပိုးကျရောက်မှု" }
+      ]
+    }
+  ]
+}

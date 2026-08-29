@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+html {
+  font-size: 18px;
+}
+
+body {
+  font-family: "Inter", "Noto Sans Myanmar", system-ui, sans-serif;
+  background: #f0f7f1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mm-text {
+  line-height: 1.9;
+}
