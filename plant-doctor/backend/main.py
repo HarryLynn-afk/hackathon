@@ -7,14 +7,30 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile
+import secrets
+
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Response, Security, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 
 from azure_speech import synthesize as synthesize_speech
-from crop_calendar import crop_catalog_entry, preview_planting
+from crop_calendar import LOOK_AHEAD_DAYS, crop_catalog_entry, preview_planting
 from elevenlabs_stt import transcribe as transcribe_speech
 from groq_client import CROPS, chat_reply, diagnose_image
+
+API_KEY = os.environ.get("PLANT_DOCTOR_API_KEY", "")
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+def require_api_key(key: str = Security(api_key_header)):
+    """All AI endpoints require the project API key (web app sends it via the
+    dev-server proxy; external clients like n8n send it directly)."""
+    if not API_KEY:
+        return  # auth disabled when no key is configured
+    if not key or not secrets.compare_digest(key, API_KEY):
+        raise HTTPException(401, "Missing or invalid API key (X-API-Key header)")
+
 
 app = FastAPI(title="Plant Doctor API")
 
@@ -40,6 +56,8 @@ class CalendarPreviewRequest(BaseModel):
     crop: str
     planted_on: str
     today: str | None = None
+    # How far ahead the "what will it look like then" forecast should reach.
+    ahead_days: int = LOOK_AHEAD_DAYS
 
 
 @app.post("/calendar/preview")
@@ -47,12 +65,12 @@ def calendar_preview(req: CalendarPreviewRequest):
     if req.crop not in CROPS:
         raise HTTPException(400, f"Unknown crop '{req.crop}'")
     try:
-        return preview_planting(req.crop, req.planted_on, req.today)
+        return preview_planting(req.crop, req.planted_on, req.today, req.ahead_days)
     except ValueError:
         raise HTTPException(400, "Dates must be YYYY-MM-DD")
 
 
-@app.post("/diagnose")
+@app.post("/diagnose", dependencies=[Depends(require_api_key)])
 async def diagnose(file: UploadFile = File(...), crop: str = Form(...)):
     if crop not in CROPS:
         raise HTTPException(400, f"Unknown crop '{crop}'")
@@ -88,7 +106,7 @@ class ChatRequest(BaseModel):
     messages: list
 
 
-@app.post("/chat")
+@app.post("/chat", dependencies=[Depends(require_api_key)])
 def chat(req: ChatRequest):
     if req.crop not in CROPS:
         raise HTTPException(400, f"Unknown crop '{req.crop}'")
@@ -107,7 +125,7 @@ class SpeakRequest(BaseModel):
     lang: str = "mm"
 
 
-@app.post("/speak")
+@app.post("/speak", dependencies=[Depends(require_api_key)])
 def speak(req: SpeakRequest):
     if not req.text or not req.text.strip():
         raise HTTPException(400, "No text to speak")
@@ -119,7 +137,7 @@ def speak(req: SpeakRequest):
     return Response(content=audio, media_type="audio/mpeg")
 
 
-@app.post("/transcribe")
+@app.post("/transcribe", dependencies=[Depends(require_api_key)])
 async def transcribe_audio(file: UploadFile = File(...), lang: str = Form("mm")):
     data = await file.read()
     if len(data) > MAX_AUDIO_BYTES:

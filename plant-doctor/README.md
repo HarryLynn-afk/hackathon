@@ -63,13 +63,33 @@ and in-app reminders for weeding, fertilizer, and harvest.
 ### Groq key fallback
 
 Free-tier Groq keys hit rate limits fast during a demo. Set `GROQ_API_KEY`
-plus any number of `GROQ_API_KEY_2`, `GROQ_API_KEY_3`, ... in `backend/.env`
-and the backend rotates through them automatically:
+plus one `GROQ_API_KEY_FALLBACK` and/or any number of `GROQ_API_KEY_2`,
+`GROQ_API_KEY_3`, ... in `backend/.env` and the backend rotates through them
+automatically:
 
-- A key that returns 429 (rate limited) is benched for its `retry-after`
-  window (capped at 2 minutes) and the next key is tried immediately.
-- A key that returns 401/403 (invalid/disabled) is benched for an hour.
-- Only if every key is unavailable does the request actually fail.
+- A key that returns 429 (rate limited) is retried a couple of times, then
+  the next key is tried.
+- A key that returns 401/403 (invalid/disabled) moves straight to the next
+  key.
+- Only if every key fails does the request actually fail.
+
+## API key (for n8n / Telegram bot / external clients)
+
+`POST /diagnose`, `/chat`, `/speak`, and `/transcribe` require an API key in
+the `X-API-Key` header. Configure it in two places (same value):
+
+- `backend/.env` — `PLANT_DOCTOR_API_KEY=pd_live_...` (the server checks this)
+- `frontend/.env` — `PLANT_DOCTOR_API_KEY=pd_live_...` (the Vite dev proxy
+  attaches it for the web app; the key never reaches browser code)
+
+External integration example (n8n HTTP Request node):
+
+- Method `POST`, URL `http://YOUR_HOST:8000/diagnose`
+- Header `X-API-Key: pd_live_...`
+- Body: multipart form with `file` (the photo binary) and `crop` (e.g. `rice`)
+
+`GET /crops` is public, so integrations can list valid crop ids without a key.
+If `PLANT_DOCTOR_API_KEY` is not set, auth is disabled (local dev mode).
 
 ## Follow-up chat
 
