@@ -5,6 +5,7 @@ import CropPicker from './CropPicker'
 import PhotoCapture from './PhotoCapture'
 import ResultCard from './ResultCard'
 import ChatPanel from './ChatPanel'
+import Calendar from './Calendar'
 
 const FALLBACK_CROPS = []
 
@@ -17,6 +18,7 @@ export default function App() {
   const [result, setResult] = useState(null)
   const [problem, setProblem] = useState(null) // notPlant | lowConfidence | error
   const [chatOpen, setChatOpen] = useState(false)
+  const [tab, setTab] = useState('doctor') // doctor | calendar
 
   const t = STRINGS[lang]
 
@@ -70,9 +72,9 @@ export default function App() {
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-lg">
+    <div className="mx-auto min-h-screen max-w-lg pb-24">
       <header className="flex items-center justify-between bg-green-800 px-4 py-3 text-white">
-        <h1 className="mm-text text-xl font-bold">🌿 {t.appName}</h1>
+        <h1 className="mm-text text-xl font-bold">🌿 {tab === 'calendar' ? t.calendarTitle : t.appName}</h1>
         <button
           onClick={() => setLang(lang === 'mm' ? 'en' : 'mm')}
           className="mm-text min-h-11 rounded-xl border-2 border-white/60 px-4 text-lg font-bold"
@@ -81,6 +83,10 @@ export default function App() {
         </button>
       </header>
 
+      {tab === 'calendar' ? (
+        <Calendar crops={crops} lang={lang} t={t} />
+      ) : (
+        <>
       {step === 'crop' && <CropPicker crops={crops} lang={lang} t={t} onPick={pickCrop} />}
 
       {step === 'photo' && (
@@ -104,7 +110,7 @@ export default function App() {
           {!chatOpen && (
             <button
               onClick={() => setChatOpen(true)}
-              className="mm-text fixed bottom-5 right-4 z-40 flex min-h-16 items-center gap-2 rounded-full bg-green-700 px-6 text-xl font-bold text-white shadow-lg transition active:scale-95"
+              className="mm-text fixed bottom-24 right-4 z-40 flex min-h-16 items-center gap-2 rounded-full bg-green-700 px-6 text-xl font-bold text-white shadow-lg transition active:scale-95"
             >
               💬 {t.chatOpen}
             </button>
@@ -137,6 +143,29 @@ export default function App() {
           </button>
         </div>
       )}
+        </>
+      )}
+
+      <nav className="fixed bottom-0 left-0 right-0 z-30 mx-auto max-w-lg border-t-2 border-green-200 bg-white pb-[env(safe-area-inset-bottom)]">
+        <div className="grid grid-cols-2">
+          <button
+            onClick={() => setTab('doctor')}
+            className={`mm-text flex min-h-16 items-center justify-center text-xl font-bold transition ${
+              tab === 'doctor' ? 'bg-green-700 text-white' : 'text-green-900'
+            }`}
+          >
+            {t.tabDoctor}
+          </button>
+          <button
+            onClick={() => setTab('calendar')}
+            className={`mm-text flex min-h-16 items-center justify-center text-xl font-bold transition ${
+              tab === 'calendar' ? 'bg-green-700 text-white' : 'text-green-900'
+            }`}
+          >
+            {t.tabCalendar}
+          </button>
+        </div>
+      </nav>
     </div>
   )
 }
