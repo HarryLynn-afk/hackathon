@@ -7,10 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from azure_speech import synthesize as synthesize_speech
 from groq_client import CROPS, chat_reply, diagnose_image
 
 app = FastAPI(title="Plant Doctor API")
@@ -85,6 +86,23 @@ def chat(req: ChatRequest):
         logging.exception("chat failed for crop=%s", req.crop)
         raise HTTPException(502, "The AI service is not responding. Please try again.")
     return {"reply": reply}
+
+
+class SpeakRequest(BaseModel):
+    text: str
+    lang: str = "mm"
+
+
+@app.post("/speak")
+def speak(req: SpeakRequest):
+    if not req.text or not req.text.strip():
+        raise HTTPException(400, "No text to speak")
+    try:
+        audio = synthesize_speech(req.text, req.lang)
+    except Exception:
+        logging.exception("speech synthesis failed for lang=%s", req.lang)
+        raise HTTPException(502, "The speech service is not responding. Please try again.")
+    return Response(content=audio, media_type="audio/mpeg")
 
 
 if __name__ == "__main__":

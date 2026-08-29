@@ -1,13 +1,26 @@
+import SpeakButton from './SpeakButton'
+
 const SEVERITY_STYLES = {
   low: 'bg-green-100 text-green-900 border-green-400',
   medium: 'bg-amber-100 text-amber-900 border-amber-400',
   high: 'bg-red-100 text-red-900 border-red-400',
 }
 
+function buildSpeechText(result, lang, t, healthy) {
+  const parts = healthy ? [t.healthy] : [result.disease?.[lang]]
+  if (!healthy && result.cause?.[lang]) parts.push(result.cause[lang])
+  for (const step of result.treatment_steps || []) {
+    if (step[lang]) parts.push(step[lang])
+  }
+  if (!healthy && result.prevention?.[lang]) parts.push(result.prevention[lang])
+  return parts.filter(Boolean).join('. ')
+}
+
 export default function ResultCard({ result, preview, lang, t, onNewCheck }) {
   const sev = result.severity in SEVERITY_STYLES ? result.severity : 'medium'
   const sevLabel = { low: t.severityLow, medium: t.severityMedium, high: t.severityHigh }[sev]
   const healthy = result.is_healthy
+  const speechText = buildSpeechText(result, lang, t, healthy)
 
   return (
     <div className="px-4 pb-10">
@@ -16,10 +29,19 @@ export default function ResultCard({ result, preview, lang, t, onNewCheck }) {
       )}
 
       <div className={`mm-text mt-4 rounded-2xl border-2 p-5 ${healthy ? SEVERITY_STYLES.low : SEVERITY_STYLES[sev]}`}>
-        <p className="text-lg font-semibold opacity-70">{t.disease}</p>
-        <h2 className="mm-text mt-1 text-3xl font-bold leading-snug">
-          {healthy ? t.healthy : result.disease[lang]}
-        </h2>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-lg font-semibold opacity-70">{t.disease}</p>
+            <h2 className="mm-text mt-1 text-3xl font-bold leading-snug">
+              {healthy ? t.healthy : result.disease[lang]}
+            </h2>
+          </div>
+          <SpeakButton
+            text={speechText}
+            lang={lang}
+            className="h-14 w-14 shrink-0 border-2 border-current bg-white/40 text-2xl"
+          />
+        </div>
         {!healthy && (
           <div className="mt-3 flex flex-wrap items-center gap-3 text-lg font-semibold">
             <span className="rounded-full border-2 border-current px-4 py-1">
