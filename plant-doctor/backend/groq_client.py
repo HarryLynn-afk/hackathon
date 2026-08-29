@@ -2,6 +2,7 @@
 
 import base64
 import json
+import logging
 import os
 import time
 
@@ -11,6 +12,10 @@ GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 # Groq's Cloudflare edge rejects default Python user agents (error 1010),
 # so every request must carry a custom one.
 HEADERS_UA = "plant-doctor/1.0"
+# Status codes that mean "this key is the problem" (revoked, or its quota is
+# spent) rather than "this request is the problem" — worth retrying on the
+# spare key. A 400 is a bad payload and would fail identically on any key.
+KEY_FAILURE_CODES = {401, 403, 429}
 
 SYSTEM_PROMPT = """You are an expert plant pathologist helping farmers in Myanmar.
 You will receive a photo of a {crop_en} ({crop_mm}) plant.
@@ -233,11 +238,21 @@ def chat_reply(crop_id: str, diagnosis: dict, lang: str, messages: list) -> str:
     return _call_groq(payload).strip()
 
 
-def _call_groq(payload: dict) -> str:
-    headers = {
-        "Authorization": f"Bearer {os.environ['GROQ_API_KEY']}",
-        "User-Agent": HEADERS_UA,
-    }
+def _api_keys() -> list[str]:
+    """The primary key first, then any spares, skipping blanks and duplicates."""
+    raw = [
+        os.environ.get("GROQ_API_KEY", ""),
+        os.environ.get("GROQ_API_KEY_FALLBACK", ""),
+    ]
+    keys = []
+    for key in raw:
+        key = key.strip()
+        if key and key not in keys:
+            keys.append(key)
+    return keys
+
+
+def _post_with_retries(payload: dict, headers: dict):
     # Free-tier Groq rate-limits bursts; retry a couple of times before failing.
     for attempt in range(3):
         resp = requests.post(GROQ_URL, json=payload, headers=headers, timeout=90)
@@ -246,5 +261,32 @@ def _call_groq(payload: dict) -> str:
             time.sleep(min(wait, 15))
             continue
         resp.raise_for_status()
-        break
-    return resp.json()["choices"][0]["message"]["content"]
+        return resp
+    resp.raise_for_status()
+    return resp
+
+
+def _call_groq(payload: dict) -> str:
+    keys = _api_keys()
+    if not keys:
+        raise RuntimeError("No Groq API key configured (set GROQ_API_KEY)")
+
+    for index, key in enumerate(keys):
+        headers = {"Authorization": f"Bearer {key}", "User-Agent": HEADERS_UA}
+        try:
+            resp = _post_with_retries(payload, headers)
+        except requests.HTTPError as exc:
+            status = exc.response.status_code if exc.response is not None else 0
+            last_key = index == len(keys) - 1
+            if status not in KEY_FAILURE_CODES or last_key:
+                raise
+            logging.warning(
+                "Groq key %d/%d failed with HTTP %s; falling back to the next key",
+                index + 1,
+                len(keys),
+                status,
+            )
+            continue
+        return resp.json()["choices"][0]["message"]["content"]
+
+    raise RuntimeError("All Groq API keys failed")

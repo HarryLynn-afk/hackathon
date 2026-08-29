@@ -1,7 +1,17 @@
 import { useMemo, useState } from 'react'
 import CropPicker from './CropPicker'
 import { addPlanting, loadPlantings, loadSimToday, saveSimToday, updatePlanting } from './plantingsStore'
-import { addDays, enrichPlanting, formatDate, previewFromCrop, todayISO } from './calendarMath'
+import {
+  LOOK_AHEAD_CHOICES,
+  LOOK_AHEAD_DEFAULT,
+  addDays,
+  enrichPlanting,
+  formatDate,
+  lookAhead,
+  previewFromCrop,
+  todayISO,
+  withGrowthDays,
+} from './calendarMath'
 
 export default function Calendar({ crops, lang, t }) {
   const realToday = todayISO()
@@ -23,7 +33,8 @@ export default function Calendar({ crops, lang, t }) {
     saveSimToday(iso === realToday ? null : iso)
   }
 
-  const cropMap = useMemo(() => Object.fromEntries(crops.map((c) => [c.id, c])), [crops])
+  const cropsReady = useMemo(() => crops.map(withGrowthDays), [crops])
+  const cropMap = useMemo(() => Object.fromEntries(cropsReady.map((c) => [c.id, c])), [cropsReady])
   const enriched = plantings.map((p) => enrichPlanting(p, cropMap[p.cropId], today))
   const growing = enriched.filter((p) => !p.actualHarvestOn)
   const harvested = enriched.filter((p) => p.actualHarvestOn)
@@ -39,18 +50,34 @@ export default function Calendar({ crops, lang, t }) {
 
   async function saveNew() {
     if (!crop || !plantedOn) return
-    let preview
+    const local = previewFromCrop(withGrowthDays(crop), plantedOn, today)
+    let preview = local
     try {
       const resp = await fetch('/api/calendar/preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ crop: crop.id, planted_on: plantedOn, today }),
       })
-      if (resp.ok) preview = await resp.json()
+      if (resp.ok) {
+        const remote = await resp.json()
+        const start = remote.expected_harvest_start
+        const end = remote.expected_harvest_end
+        preview = {
+          ...local,
+          ...remote,
+          expected_harvest_start:
+            typeof start === 'string' && /^\d{4}-\d{2}-\d{2}/.test(start)
+              ? start.slice(0, 10)
+              : local.expected_harvest_start,
+          expected_harvest_end:
+            typeof end === 'string' && /^\d{4}-\d{2}-\d{2}/.test(end)
+              ? end.slice(0, 10)
+              : local.expected_harvest_end,
+        }
+      }
     } catch {
-      preview = null
+      preview = local
     }
-    if (!preview) preview = previewFromCrop(crop, plantedOn, today)
     const planting = {
       id: crypto.randomUUID(),
       cropId: crop.id,
@@ -98,7 +125,7 @@ export default function Calendar({ crops, lang, t }) {
       <>
         {clock}
         <CropPicker
-          crops={crops}
+          crops={cropsReady}
           lang={lang}
           t={{ ...t, chooseCrop: t.calendarChooseCrop, chooseCropHint: t.calendarChooseHint }}
           onPick={(c) => {
@@ -405,6 +432,8 @@ function PlantingDetail({
         })}
       </ol>
 
+      {!harvested && <LookAheadCard planting={planting} lang={lang} t={t} today={today} />}
+
       <dl className="mt-4 space-y-3 rounded-2xl border-2 border-green-200 bg-white p-5 text-lg">
         <Row label={t.plantedOn} value={formatDate(planting.plantedOn, lang)} />
         <Row
@@ -432,6 +461,85 @@ function PlantingDetail({
     </div>
   )
 }
+
+function LookAheadCard({ planting, lang, t, today }) {
+  const [ahead, setAhead] = useState(LOOK_AHEAD_DEFAULT)
+  const crop = planting.cropMeta
+  if (!crop) return null
+
+  const view = lookAhead(crop, planting.plantedOn, today, ahead)
+  const pct = Math.round(view.progress * 100)
+  const overdue = view.harvestStatus === 'overdue'
+  const ready = view.harvestStatus === 'ready'
+  const status = overdue
+    ? t.lookAheadOverdue
+    : ready
+      ? t.lookAheadReady
+      : t.lookAheadToHarvest.replace('{n}', view.daysToHarvest)
+
+  const tone = overdue
+    ? 'border-amber-400 bg-amber-50'
+    : ready
+      ? 'border-green-500 bg-green-50'
+      : 'border-indigo-300 bg-indigo-50'
+
+  return (
+    <section className={`mt-4 rounded-2xl border-2 p-5 ${tone}`}>
+      <p className="mm-text text-lg font-bold text-green-900">🔮 {t.lookAheadTitle}</p>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {LOOK_AHEAD_CHOICES.map((days) => (
+          <button
+            key={days}
+            type="button"
+            onClick={() => setAhead(days)}
+            aria-pressed={days === ahead}
+            className={`mm-text min-h-12 rounded-xl border-2 text-lg font-bold transition active:scale-95 ${
+              days === ahead
+                ? 'border-green-700 bg-green-700 text-white'
+                : 'border-green-700 bg-white text-green-800'
+            }`}
+          >
+            {t.lookAheadDays.replace('{n}', days)}
+          </button>
+        ))}
+      </div>
+
+      <p className="mm-text mt-4 text-lg font-semibold text-green-900">{formatDate(view.date, lang)}</p>
+
+      <p className="mm-text mt-3 text-green-800/70">{t.lookAheadStageThen}</p>
+      <p className="mm-text text-2xl font-bold text-green-800">{view.stage?.[lang]}</p>
+      <p className="mm-text mt-1 text-green-800/70">
+        {view.stageChanged ? t.lookAheadNewStage : t.lookAheadSameStage}
+      </p>
+
+      <div className="mt-4 h-3 overflow-hidden rounded-full bg-white">
+        <div className="h-full rounded-full bg-green-700" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mm-text mt-3 text-lg font-semibold text-green-900">
+        {t.growingDay.replace('{n}', view.daysGrown)} · {pct}%
+      </p>
+      <p className="mm-text mt-1 text-lg text-green-800">{status}</p>
+
+      <p className="mm-text mt-5 text-lg font-bold text-green-900">{t.lookAheadTasks}</p>
+      {view.tasks.length === 0 ? (
+        <p className="mm-text mt-1 text-green-800/70">{t.lookAheadNoTasks}</p>
+      ) : (
+        <ul className="mt-2 space-y-2">
+          {view.tasks.map((task) => (
+            <li key={task.id} className="rounded-xl bg-white px-4 py-3">
+              <p className="mm-text text-lg leading-relaxed text-green-900">{task[lang]}</p>
+              <p className="mm-text mt-1 text-green-800/70">
+                {formatDate(task.date, lang)} · {t.lookAheadTaskIn.replace('{n}', task.inDays)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 
 function Row({ label, value }) {
   return (

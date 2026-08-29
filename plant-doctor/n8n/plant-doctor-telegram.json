@@ -1,0 +1,465 @@
+{
+  "name": "Plant Doctor — Telegram (Burmese text + voice)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "PLANT_DOCTOR_TG",
+          "name": "Plant Doctor Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Turn any Telegram update into one uniform item, and remember which crop\n// each chat picked (workflow static data survives between executions).\nconst CROPS = {\n  rice: '🌾 စပါး',\n  groundnut: '🥜 မြေပဲ',\n  black_gram: '🫘 မတ်ပဲ',\n  green_gram: '🌱 ပဲတီစိမ်း',\n  pigeon_pea: '🫛 ပဲစင်းငုံ',\n  sesame: '🌿 နှမ်း',\n  chili: '🌶️ ငရုတ်',\n  maize: '🌽 ပြောင်း',\n};\n\nconst store = $getWorkflowStaticData('global');\nif (!store.crops) store.crops = {};\n\nconst out = [];\nfor (const item of $input.all()) {\n  const u = item.json;\n  const cb = u.callback_query;\n  const msg = u.message || (cb ? cb.message : null);\n  const chatId = msg && msg.chat ? msg.chat.id : null;\n  const key = String(chatId);\n\n  let kind = 'help';\n  if (cb && String(cb.data || '').startsWith('crop:')) {\n    store.crops[key] = String(cb.data).slice(5);\n    kind = 'crop';\n  } else if (u.message && u.message.photo) {\n    // A photo is only useful once we know which crop it is.\n    kind = store.crops[key] ? 'photo' : 'help';\n  }\n\n  const crop = store.crops[key] || null;\n  out.push({\n    json: {\n      kind,\n      chatId,\n      crop,\n      cropName: crop ? CROPS[crop] : '',\n      callbackQueryId: cb ? cb.id : null,\n    },\n    binary: item.binary,\n  });\n}\nreturn out;\n"
+      },
+      "id": "normalize",
+      "name": "Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.kind }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "photo",
+              "output": 0
+            },
+            {
+              "value2": "crop",
+              "output": 1
+            }
+          ]
+        },
+        "fallbackOutput": 2
+      },
+      "id": "route",
+      "name": "Route",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/diagnose",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "PASTE_YOUR_PLANT_DOCTOR_API_KEY"
+            }
+          ]
+        },
+        "contentType": "multipart-form-data",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "crop",
+              "value": "={{ $json.crop }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "diagnose",
+      "name": "Diagnose",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Build the Burmese chat message and a clean plain-text version for the voice.\nconst SEVERITY = { low: 'အနည်းငယ်', medium: 'အလယ်အလတ်', high: 'ပြင်းထန်' };\n\nconst ctx = $('Normalize').first().json;\nconst d = $input.first().json || {};\n\nconst fail = (t) => [{ json: { chatId: ctx.chatId, text: t, speech: t, speak: true } }];\n\nif (d.error || d.detail) {\n  return fail('ဆောရီးပါ၊ စစ်ဆေးမှု မအောင်မြင်ပါ။ ခဏနေမှ ထပ်ကြိုးစားပေးပါနော်။');\n}\nif (d.status === 'not_plant') {\n  return fail('ဒီပုံက အပင်ပုံ မဟုတ်ဘူးနော်။ ရောဂါဖြစ်နေတဲ့ အရွက်ကို နီးနီးကပ်ကပ် ရိုက်ပြီး ပြန်ပို့ပေးပါ။');\n}\nif (d.status === 'low_confidence') {\n  return fail('ပုံက မရှင်းလင်းလို့ တိတိကျကျ မပြောနိုင်သေးဘူးနော်။ အလင်းရောင်ကောင်းကောင်းနဲ့ အရွက်ကို နီးနီးကပ်ကပ် ထပ်ရိုက်ပြီး ပို့ပေးပါ။');\n}\n\nconst lines = [];\nconst say = [];\n\nlines.push('🌱 ' + ctx.cropName + ' — ရောဂါစစ်ဆေးမှု ရလဒ်');\nlines.push('');\nlines.push('🦠 ရောဂါ — ' + d.disease.mm);\nlines.push('📊 ပြင်းထန်မှု — ' + (SEVERITY[d.severity] || d.severity));\nlines.push('🎯 ယုံကြည်မှု — ' + Math.round((d.confidence || 0) * 100) + '%');\nsay.push('ရောဂါက ' + d.disease.mm + ' ဖြစ်ပါတယ်။');\n\nlines.push('');\nlines.push('🔍 အကြောင်းရင်း');\nlines.push(d.cause.mm);\nsay.push(d.cause.mm);\n\nlines.push('');\nlines.push('💊 ကုသနည်း');\n(d.treatment_steps || []).forEach((s, i) => {\n  lines.push(i + 1 + '။ ' + s.mm);\n  say.push(s.mm);\n});\n\nif ((d.medicines || []).length) {\n  lines.push('');\n  lines.push('🧪 အသုံးပြုနိုင်တဲ့ဆေး');\n  d.medicines.forEach((m) => {\n    lines.push('• ' + m.name_mm + ' (' + m.company_mm + ')');\n    if (m.note && m.note.mm) lines.push('   ' + m.note.mm);\n    say.push(m.name_mm + ' သုံးနိုင်ပါတယ်။ ' + (m.note && m.note.mm ? m.note.mm : ''));\n  });\n}\n\nlines.push('');\nlines.push('🛡️ ကာကွယ်နည်း');\nlines.push(d.prevention.mm);\nsay.push(d.prevention.mm);\n\nlines.push('');\nlines.push('📷 အပင်တစ်မျိုး စစ်ချင်ရင် /start နှိပ်ပါ။');\n\n// Azure charges per character, so keep the spoken version tight.\nconst speech = say.join(' ').replace(/\\s+/g, ' ').trim().slice(0, 1500);\n\nreturn [{ json: { chatId: ctx.chatId, text: lines.join('\\n'), speech, speak: true } }];\n"
+      },
+      "id": "format-burmese",
+      "name": "Format Burmese",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "send-diagnosis-text",
+      "name": "Send Diagnosis Text",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        860,
+        120
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "PLANT_DOCTOR_TG",
+          "name": "Plant Doctor Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/speak",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "PASTE_YOUR_PLANT_DOCTOR_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $('Format Burmese').first().json.speech, lang: 'mm' }) }}",
+        "options": {
+          "timeout": 120000,
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "speak-burmese",
+      "name": "Speak Burmese",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1080,
+        120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Format Burmese').first().json.chatId }}",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "additionalFields": {
+          "title": "ရောဂါစစ်ဆေးမှု ရလဒ်",
+          "performer": "Plant Doctor"
+        }
+      },
+      "id": "send-voice",
+      "name": "Send Voice",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1300,
+        120
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "PLANT_DOCTOR_TG",
+          "name": "Plant Doctor Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "operation": "answerQuery",
+        "queryId": "={{ $json.callbackQueryId }}",
+        "additionalFields": {}
+      },
+      "id": "ack-button",
+      "name": "Ack Button",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        320
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "PLANT_DOCTOR_TG",
+          "name": "Plant Doctor Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Normalize').first().json.chatId }}",
+        "text": "={{ $('Normalize').first().json.cropName + ' ကို ရွေးထားပါတယ်။\\n\\n📷 ရောဂါဖြစ်နေတဲ့ အရွက်ကို နီးနီးကပ်ကပ်၊ အလင်းရောင်ကောင်းကောင်းနဲ့ ရိုက်ပြီး ဓာတ်ပုံပို့ပေးပါနော်။' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ask-for-photo",
+      "name": "Ask For Photo",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        320
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "PLANT_DOCTOR_TG",
+          "name": "Plant Doctor Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "🌿 အပင်ဆရာဝန် မှ ကြိုဆိုပါတယ်။\n\nဘယ်သီးနှံလဲ ရွေးပေးပါ 👇",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🌾 စပါး",
+                    "additionalFields": {
+                      "callback_data": "crop:rice"
+                    }
+                  },
+                  {
+                    "text": "🥜 မြေပဲ",
+                    "additionalFields": {
+                      "callback_data": "crop:groundnut"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🫘 မတ်ပဲ",
+                    "additionalFields": {
+                      "callback_data": "crop:black_gram"
+                    }
+                  },
+                  {
+                    "text": "🌱 ပဲတီစိမ်း",
+                    "additionalFields": {
+                      "callback_data": "crop:green_gram"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🫛 ပဲစင်းငုံ",
+                    "additionalFields": {
+                      "callback_data": "crop:pigeon_pea"
+                    }
+                  },
+                  {
+                    "text": "🌿 နှမ်း",
+                    "additionalFields": {
+                      "callback_data": "crop:sesame"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🌶️ ငရုတ်",
+                    "additionalFields": {
+                      "callback_data": "crop:chili"
+                    }
+                  },
+                  {
+                    "text": "🌽 ပြောင်း",
+                    "additionalFields": {
+                      "callback_data": "crop:maize"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "send-crop-menu",
+      "name": "Send Crop Menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        520
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "PLANT_DOCTOR_TG",
+          "name": "Plant Doctor Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route": {
+      "main": [
+        [
+          {
+            "node": "Diagnose",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ack Button",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Crop Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Diagnose": {
+      "main": [
+        [
+          {
+            "node": "Format Burmese",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Burmese": {
+      "main": [
+        [
+          {
+            "node": "Send Diagnosis Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Diagnosis Text": {
+      "main": [
+        [
+          {
+            "node": "Speak Burmese",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Speak Burmese": {
+      "main": [
+        [
+          {
+            "node": "Send Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ack Button": {
+      "main": [
+        [
+          {
+            "node": "Ask For Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -57,6 +57,24 @@ and in-app reminders for weeding, fertilizer, and harvest.
 4. Guardrails: non-plant photos are rejected, confidence below 60% asks the
    farmer to retake, and the model is told to never invent pesticide dosages.
 
+## API key (for n8n / Telegram bot / external clients)
+
+`POST /diagnose`, `/chat`, and `/speak` require an API key in the `X-API-Key`
+header. Configure it in two places (same value):
+
+- `backend/.env` — `PLANT_DOCTOR_API_KEY=pd_live_...` (the server checks this)
+- `frontend/.env` — `PLANT_DOCTOR_API_KEY=pd_live_...` (the Vite dev proxy
+  attaches it for the web app; the key never reaches browser code)
+
+External integration example (n8n HTTP Request node):
+
+- Method `POST`, URL `http://YOUR_HOST:8000/diagnose`
+- Header `X-API-Key: pd_live_...`
+- Body: multipart form with `file` (the photo binary) and `crop` (e.g. `rice`)
+
+`GET /crops` is public, so integrations can list valid crop ids without a key.
+If `PLANT_DOCTOR_API_KEY` is not set, auth is disabled (local dev mode).
+
 ## Follow-up chat
 
 After a diagnosis, a floating "Ask a question" button opens a chat about that

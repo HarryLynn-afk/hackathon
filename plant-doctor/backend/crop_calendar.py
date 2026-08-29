@@ -5,24 +5,48 @@ from datetime import date, timedelta
 from groq_client import CROPS
 
 HARVEST_REMIND_DAYS = 14
+LOOK_AHEAD_DAYS = 30
+DEFAULT_GROWTH_DAYS = {
+    "rice": (120, 140),
+    "groundnut": (100, 120),
+    "black_gram": (70, 90),
+    "green_gram": (60, 75),
+    "pigeon_pea": (150, 180),
+    "sesame": (80, 100),
+    "chili": (90, 110),
+    "maize": (90, 120),
+}
 
 
 def _parse_iso(value: str) -> date:
-    return date.fromisoformat(value)
+    return date.fromisoformat(value[:10])
 
 
 def _iso(value: date) -> str:
     return value.isoformat()
 
 
+def growth_days(crop: dict) -> tuple[int, int]:
+    try:
+        minimum = int(crop["min_days"])
+        maximum = int(crop["max_days"])
+        if minimum > 0 and maximum >= minimum:
+            return minimum, maximum
+    except (KeyError, TypeError, ValueError):
+        pass
+    return DEFAULT_GROWTH_DAYS.get(crop.get("id"), (90, 120))
+
+
 def typical_days(crop: dict) -> int:
-    return (int(crop["min_days"]) + int(crop["max_days"])) // 2
+    minimum, maximum = growth_days(crop)
+    return (minimum + maximum) // 2
 
 
 def harvest_window(crop: dict, planted_on: date) -> dict:
+    minimum, maximum = growth_days(crop)
     return {
-        "expected_harvest_start": planted_on + timedelta(days=int(crop["min_days"])),
-        "expected_harvest_end": planted_on + timedelta(days=int(crop["max_days"])),
+        "expected_harvest_start": planted_on + timedelta(days=minimum),
+        "expected_harvest_end": planted_on + timedelta(days=maximum),
     }
 
 
@@ -101,7 +125,90 @@ def reminders(crop: dict, planted_on: date, today: date, harvested: bool) -> lis
     return items
 
 
-def preview_planting(crop_id: str, planted_on: str, today: str | None = None) -> dict:
+def look_ahead(crop: dict, planted_on: date, today: date, ahead_days: int = LOOK_AHEAD_DAYS) -> dict:
+    """What this planting looks like `ahead_days` from now.
+
+    Farmers plan work weeks in advance, so the calendar answers "what will my
+    crop be doing in a month" instead of only "what is it doing today".
+    """
+    ahead = max(1, int(ahead_days))
+    target = today + timedelta(days=ahead)
+    window = harvest_window(crop, planted_on)
+    harvest_start = window["expected_harvest_start"]
+    harvest_end = window["expected_harvest_end"]
+
+    now_stage = current_stage(crop, planted_on, today)
+    then_stage = current_stage(crop, planted_on, target)
+
+    if target > harvest_end:
+        status = "overdue"
+    elif target >= harvest_start:
+        status = "ready"
+    else:
+        status = "growing"
+
+    # Care tasks that fall due between now and the target date — the whole
+    # point of looking ahead is to see the work coming.
+    tasks = []
+    for task in crop.get("care") or []:
+        due = planted_on + timedelta(days=int(task["day"]))
+        if today < due <= target:
+            tasks.append(
+                {
+                    "id": task["id"],
+                    "date": _iso(due),
+                    "in_days": (due - today).days,
+                    "en": task["en"],
+                    "mm": task["mm"],
+                }
+            )
+
+    days_to_harvest = max(0, (harvest_start - target).days)
+    crop_en = crop["name"]["en"]
+    crop_mm = crop["name"]["mm"]
+
+    if status == "growing":
+        headline = {
+            "en": f"In {ahead} days your {crop_en.lower()} will be at "
+            f"{then_stage['en'].lower()}, about {days_to_harvest} days short of harvest.",
+            "mm": f"{ahead} ရက်အကြာမှာ {crop_mm}က {then_stage['mm']} ရောက်နေပါလိမ့်မယ်။ "
+            f"ရိတ်သိမ်းဖို့ {days_to_harvest} ရက်လောက် လိုပါသေးတယ်။",
+        }
+    elif status == "ready":
+        headline = {
+            "en": f"In {ahead} days your {crop_en.lower()} should be ready to harvest "
+            f"(window opens {_iso(harvest_start)}).",
+            "mm": f"{ahead} ရက်အကြာမှာ {crop_mm}က ရိတ်သိမ်းလို့ ရနေပါပြီ။ "
+            f"ရိတ်သိမ်းချိန် စတာက {_iso(harvest_start)} ပါ။",
+        }
+    else:
+        headline = {
+            "en": f"In {ahead} days the harvest window will have closed. "
+            f"Plan to harvest before {_iso(harvest_end)}.",
+            "mm": f"{ahead} ရက်အကြာဆိုရင် ရိတ်သိမ်းချိန် ကျော်သွားပါပြီ။ "
+            f"{_iso(harvest_end)} မတိုင်ခင် ရိတ်ဖို့ ပြင်ထားပါနော်။",
+        }
+
+    return {
+        "ahead_days": ahead,
+        "date": _iso(target),
+        "days_grown": days_grown(planted_on, target),
+        "progress": round(progress_ratio(crop, planted_on, target), 3),
+        "stage": {"id": then_stage["id"], "en": then_stage["en"], "mm": then_stage["mm"]},
+        "stage_changed": then_stage["id"] != now_stage["id"],
+        "harvest_status": status,
+        "days_to_harvest": days_to_harvest,
+        "tasks": tasks,
+        "headline": headline,
+    }
+
+
+def preview_planting(
+    crop_id: str,
+    planted_on: str,
+    today: str | None = None,
+    ahead_days: int = LOOK_AHEAD_DAYS,
+) -> dict:
     """Server-side harvest calc used by POST /calendar/preview."""
     if crop_id not in CROPS:
         raise KeyError(crop_id)
@@ -123,8 +230,9 @@ def preview_planting(crop_id: str, planted_on: str, today: str | None = None) ->
         "stage": {"id": stage["id"], "en": stage["en"], "mm": stage["mm"]},
         "stages": crop.get("stages", []),
         "reminders": reminders(crop, planted, now, harvested=False),
-        "min_days": crop["min_days"],
-        "max_days": crop["max_days"],
+        "look_ahead": look_ahead(crop, planted, now, ahead_days),
+        "min_days": growth_days(crop)[0],
+        "max_days": growth_days(crop)[1],
     }
 
 
@@ -133,8 +241,8 @@ def crop_catalog_entry(crop: dict) -> dict:
         "id": crop["id"],
         "name": crop["name"],
         "icon": crop["icon"],
-        "min_days": crop.get("min_days"),
-        "max_days": crop.get("max_days"),
+        "min_days": crop.get("min_days") or growth_days(crop)[0],
+        "max_days": crop.get("max_days") or growth_days(crop)[1],
         "stages": crop.get("stages", []),
         "care": crop.get("care", []),
     }
